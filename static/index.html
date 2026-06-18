@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masa & Fuego</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-page:           #F0ECEB;
+      --bg-chat:           #FAFAFA;
+      --bg-mensaje:        #F5F0EF;
+      --bg-input:          #F5F0EF;
+      --bg-input-focus:    #fff;
+      --text-main:         #1A1A1A;
+      --text-muted:        #999;
+      --text-placeholder:  #C0A9A7;
+      --border:            #EDE8E7;
+      --border-header:     rgba(176,58,46,0.13);
+      --scrollbar:         #E8DFDE;
+      --accent:            #B03A2E;
+      --accent-dark:       #922B21;
+      --accent-light:      rgba(176,58,46,0.10);
+      --success:           #2ECC71;
+      --danger:            #E74C3C;
+      --shadow:            0 8px 40px rgba(0,0,0,0.10);
+    }
+
+    body.dark {
+      --bg-page:           #111111;
+      --bg-chat:           #1C1C1C;
+      --bg-mensaje:        #2A2A2A;
+      --bg-input:          #242424;
+      --bg-input-focus:    #2E2E2E;
+      --text-main:         #F0ECEB;
+      --text-muted:        #666;
+      --text-placeholder:  #444;
+      --border:            #2E2E2E;
+      --border-header:     rgba(176,58,46,0.15);
+      --scrollbar:         #333;
+      --accent:            #C0443A;
+      --accent-dark:       #A0342A;
+      --accent-light:      rgba(192,68,58,0.15);
+      --shadow:            0 8px 40px rgba(0,0,0,0.4);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-page);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #chat-wrapper {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+    }
+
+    #chat-container {
+      background: var(--bg-chat);
+      width: 380px;
+      height:  min(620px, calc(100vh - 80px));
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform-origin: bottom right;
+      animation: chatEnter 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes chatEnter {
+      from { opacity: 0; transform: scale(0.85) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    #chat-container.minimizado {
+      animation: chatSalir 0.25s ease forwards;
+      pointer-events: none;
+    }
+
+    @keyframes chatSalir {
+      to { opacity: 0; transform: scale(0.85) translateY(20px); }
+    }
+
+    @media (max-width: 480px) {
+      #chat-wrapper { bottom: 0; right: 0; left: 0; width: 100%; }
+      #chat-container {
+        width: 100%;
+        height: 100dvh;
+        border-radius: 0;
+        animation: none;
+      }
+      #messages { flex: 1; min-height: 0; }
+    }
+
+    /* ── Header ── */
+    #chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-header);
+      background: var(--bg-chat);
+      flex-shrink: 0;
+    }
+
+    #chat-header-info { display: flex; align-items: center; gap: 10px; }
+
+    #chat-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--text-main);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    #chat-titulo { font-size: 13px; font-weight: 600; color: var(--text-main); letter-spacing: 0.01em; }
+
+    #chat-subtitulo {
+      font-size: 11px; color: var(--text-muted); font-weight: 300;
+      display: flex; align-items: center; gap: 4px; margin-top: 1px;
+    }
+
+    #estado-dot { font-size: 8px; line-height: 1; transition: color 0.4s; }
+    #estado-dot.abierto { color: var(--success); }
+    #estado-dot.cerrado { color: var(--danger); }
+
+    #chat-acciones { display: flex; gap: 4px; }
+
+    .btn-accion {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 15px;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px; transition: background 0.15s, color 0.15s;
+    }
+    .btn-accion:hover { background: var(--accent-light); color: var(--accent); }
+
+    /* ── Mensajes ── */
+    #messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scroll-behavior: smooth;
+    }
+
+    #messages::-webkit-scrollbar { width: 3px; }
+    #messages::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+
+    .mensaje {
+      padding: 10px 14px;
+      border-radius: 16px;
+      max-width: 82%;
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 400;
+      animation: msgEnter 0.2s ease both;
+      position: relative;
+    }
+
+    @keyframes msgEnter {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .usuario {
+      background: var(--accent);
+      color: #FAFAFA;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bot {
+      background: var(--bg-mensaje);
+      color: var(--text-main);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-hora {
+      font-size: 10px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 4px;
+      text-align: right;
+    }
+    .bot .msg-hora { color: var(--text-muted); }
+
+    /* ── Calificación ── */
+    .msg-rating {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+      align-items: center;
+    }
+    .btn-rating {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px 7px;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-rating:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-rating.activo-positivo { background: rgba(46,204,113,0.12); border-color: #2ECC71; color: #2ECC71; }
+    .btn-rating.activo-negativo { background: rgba(231,76,60,0.12); border-color: var(--danger); color: var(--danger); }
+    .rating-gracias { font-size: 10.5px; color: var(--text-muted); font-style: italic; }
+
+    /* ── Foto de plato ── */
+    .msg-foto {
+      margin-top: 8px;
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 200px;
+    }
+    .msg-foto img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+      border-radius: 10px;
+      transition: transform 0.2s;
+    }
+    .msg-foto img:hover { transform: scale(1.03); }
+
+    /* ── Typing dots ── */
+    .escribiendo {
+      background: var(--bg-mensaje);
+      align-self: flex-start;
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      padding: 13px 16px;
+    }
+    .typing-dots { display: flex; align-items: center; gap: 5px; height: 14px; }
+    .typing-dots span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); opacity: 0.5;
+      animation: dot-bounce 1.2s infinite ease-in-out;
+    }
+    .typing-dots span:nth-child(1) { animation-delay: 0s; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dot-bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30%            { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* ── Botones rápidos ── */
+    .botones-rapidos-wrap {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      padding: 2px 0 4px;
+      align-self: flex-start;
+      max-width: 100%;
+    }
+
+    .btn-rapido {
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      border-radius: 20px;
+      padding: 5px 13px;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .btn-rapido:hover {
+      background: var(--accent);
+      color: #FAFAFA;
+    }
+
+    /* ── Sugerencias dinámicas ── */
+    .sugerencias-wrap {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      padding: 2px 0 2px;
+      align-self: flex-start;
+    }
+    .btn-sugerencia {
+      background: var(--accent-light);
+      border: none;
+      color: var(--accent);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-sugerencia:hover { background: var(--accent); color: #FAFAFA; }
+
+    /* ── Vista previa del pedido ── */
+    #pedido-preview {
+      border-top: 1px solid var(--border);
+      background: var(--bg-chat);
+      padding: 10px 16px;
+      flex-shrink: 0;
+      animation: msgEnter 0.2s ease both;
+    }
+    #pedido-preview.oculto { display: none; }
+
+    #pedido-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #pedido-titulo {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #pedido-toggle {
+      font-size: 11px;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+    }
+    #pedido-toggle.abierto { transform: rotate(180deg); }
+
+    #pedido-items {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    #pedido-items.oculto { display: none; }
+
+    .pedido-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-main);
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .pedido-item:last-child { border-bottom: none; }
+    .pedido-item span:last-child { color: var(--accent); font-weight: 500; }
+
+    #pedido-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 6px;
+      padding-top: 4px;
+      border-top: 1.5px solid var(--border);
+    }
+    #pedido-total span:last-child { color: var(--accent); }
+
+    .pedido-acciones {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    #btn-limpiar-pedido, #btn-historial-pedido {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      transition: color 0.15s;
+    }
+    #btn-limpiar-pedido:hover { color: var(--danger); }
+    #btn-historial-pedido:hover { color: var(--accent); }
+
+    /* ── Modal historial de pedidos ── */
+    #modal-historial {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+    #modal-historial.visible { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    #modal-inner {
+      background: var(--bg-chat);
+      border-radius: 16px;
+      padding: 24px;
+      width: 340px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+      animation: msgEnter 0.25s ease both;
+    }
+    #modal-inner h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #btn-cerrar-modal {
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; color: var(--text-muted);
+      line-height: 1;
+    }
+    .historial-pedido {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .historial-pedido-fecha {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .historial-pedido-item {
+      font-size: 12px;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 0;
+    }
+    .historial-pedido-total {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--accent);
+      text-align: right;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+    }
+    .historial-vacio {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    /* ── Input area ── */
+    #input-area {
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      gap: 8px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-chat);
+      flex-shrink: 0;
+    }
+
+    #input-wrap { flex: 1; position: relative; }
+
+    #input {
+      width: 100%;
+      padding: 9px 38px 9px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      outline: none;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-input);
+      color: var(--text-main);
+      transition: border 0.2s, background 0.2s;
+      resize: none;
+    }
+    #input:focus { border-color: var(--accent); background: var(--bg-input-focus); }
+    #input::placeholder { color: var(--text-placeholder); }
+
+    #char-count {
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    #char-count.limite { color: var(--danger); }
+
+    #btn-enviar {
+      background: var(--accent);
+      color: #FAFAFA;
+      border: none;
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, opacity 0.2s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    #btn-enviar:hover:not(:disabled) { background: var(--accent-dark); transform: scale(1.05); }
+    #btn-enviar:disabled { opacity: 0.45; cursor: not-allowed; }
+    #btn-enviar svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; }
+    #btn-enviar .spinner { display: none; }
+    #btn-enviar.cargando .icono-enviar { display: none; }
+    #btn-enviar.cargando .spinner { display: block; }
+
+    .spinner-svg {
+      width: 16px; height: 16px;
+      animation: girar 0.8s linear infinite;
+    }
+    @keyframes girar { to { transform: rotate(360deg); } }
+
+    /* ── Botón abrir ── */
+    #btn-abrir {
+      display: none;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 54px; height: 54px;
+      cursor: pointer;
+      font-size: 22px;
+      box-shadow: 0 4px 20px rgba(176,58,46,0.35);
+      align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+      position: relative;
+    }
+    #btn-abrir:hover { background: var(--accent-dark); transform: scale(1.05); }
+    #btn-abrir.visible { display: flex; }
+
+    #badge {
+      position: absolute;
+      top: -3px; right: -3px;
+      background: var(--accent-dark);
+      color: white;
+      border-radius: 50%;
+      width: 18px; height: 18px;
+      font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      align-self: center;
+      background: var(--danger);
+      color: white;
+      border-radius: 10px;
+      padding: 7px 14px;
+      font-size: 12px;
+      max-width: 90%;
+      text-align: center;
+      animation: msgEnter 0.2s ease both;
+    }
+
+    /* ── Panel de Analytics ── */
+    #panel-analytics {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-chat);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      width: 360px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      z-index: 10000;
+      animation: msgEnter 0.25s ease both;
+    }
+    #panel-analytics.visible { display: block; }
+
+    #analytics-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 9999;
+    }
+    #analytics-overlay.visible { display: block; }
+
+    #panel-analytics h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    #btn-cerrar-analytics {
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; color: var(--text-muted);
+    }
+
+    .analytics-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12.5px;
+      color: var(--text-main);
+    }
+    .analytics-stat:last-child { border-bottom: none; }
+    .analytics-stat span:last-child { font-weight: 600; color: var(--accent); }
+
+    .analytics-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 14px 0 8px;
+    }
+
+    .analytics-bar-wrap {
+      margin-bottom: 8px;
+    }
+    .analytics-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-main);
+      margin-bottom: 3px;
+    }
+    .analytics-bar-label span:last-child { color: var(--text-muted); }
+    .analytics-bar-bg {
+      height: 5px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .analytics-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .analytics-hint {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 14px;
+      font-style: italic;
+    }
+
+    /* ── Modal nombre ── */
+    #modal-nombre {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 10001;
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-nombre.visible { display: flex; }
+    #nombre-inner {
+      background: var(--bg-chat);
+      border-radius: 16px;
+      padding: 28px 24px;
+      width: 300px;
+      box-shadow: var(--shadow);
+      animation: msgEnter 0.25s ease both;
+      text-align: center;
+    }
+    #nombre-inner p {
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    #nombre-inner .emoji-bienvenida { font-size: 32px; margin-bottom: 10px; }
+    #nombre-input {
+      width: 100%;
+      padding: 9px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      outline: none;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-input);
+      color: var(--text-main);
+      margin-bottom: 10px;
+      transition: border 0.2s;
+    }
+    #nombre-input:focus { border-color: var(--accent); }
+    #btn-guardar-nombre {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 9px 24px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    #btn-guardar-nombre:hover { background: var(--accent-dark); }
+    #btn-saltar-nombre {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-family: 'Inter', sans-serif;
+      text-decoration: underline;
+    }
+
+    /* ── Animación item pedido nuevo ── */
+    @keyframes itemPop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+    .item-nuevo { animation: itemPop 0.4s ease; }
+  </style>
+</head>
+<body>
+
+<!-- Modal nombre -->
+<div id="modal-nombre">
+  <div id="nombre-inner">
+    <div class="emoji-bienvenida">🔥</div>
+    <p>¡Hola! ¿Cómo te llamás? Así te atendemos mejor.</p>
+    <input id="nombre-input" type="text" placeholder="Tu nombre..." maxlength="30" autocomplete="off" />
+    <button id="btn-guardar-nombre">Continuar</button>
+    <br>
+    <button id="btn-saltar-nombre">Preferir continuar sin nombre</button>
+  </div>
+</div>
+
+<!-- Modal historial de pedidos -->
+<div id="modal-historial">
+  <div id="modal-inner">
+    <h2>📦 Historial de pedidos <button id="btn-cerrar-modal">✕</button></h2>
+    <div id="historial-lista"></div>
+  </div>
+</div>
+
+<!-- Panel analytics secreto -->
+<div id="analytics-overlay"></div>
+<div id="panel-analytics">
+  <h2>📊 Analytics <button id="btn-cerrar-analytics">✕</button></h2>
+  <div class="analytics-section-title">General</div>
+  <div class="analytics-stat"><span>Sesiones totales</span><span id="an-sesiones">0</span></div>
+  <div class="analytics-stat"><span>Mensajes enviados</span><span id="an-mensajes">0</span></div>
+  <div class="analytics-stat"><span>Respuestas calificadas</span><span id="an-calificadas">0</span></div>
+  <div class="analytics-stat"><span>👍 Positivas</span><span id="an-positivas">0</span></div>
+  <div class="analytics-stat"><span>👎 Negativas</span><span id="an-negativas">0</span></div>
+  <div class="analytics-stat"><span>Pedidos guardados</span><span id="an-pedidos">0</span></div>
+  <div class="analytics-section-title">Temas más consultados</div>
+  <div id="an-temas"></div>
+  <p class="analytics-hint">Abrí con Ctrl+Shift+A · Solo vos ves esto</p>
+</div>
+
+<div id="chat-wrapper">
+  <div id="chat-container">
+
+    <!-- Header -->
+    <div id="chat-header">
+      <div id="chat-header-info">
+        <div id="chat-avatar">🔥</div>
+        <div>
+          <div id="chat-titulo">Masa & Fuego</div>
+          <div id="chat-subtitulo">
+            <span id="estado-dot">●</span>
+            <span id="estado-texto">Cargando...</span>
+          </div>
+        </div>
+      </div>
+      <div id="chat-acciones">
+        <button class="btn-accion" id="btn-tema" title="Modo oscuro">🌙</button>
+        <button class="btn-accion" id="btn-reset" title="Nueva conversación">🗑️</button>
+        <button class="btn-accion" id="btn-minimizar" title="Minimizar">−</button>
+        <button class="btn-accion" id="btn-cerrar" title="Cerrar">✕</button>
+      </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div id="messages"></div>
+
+    <!-- Vista previa del pedido -->
+    <div id="pedido-preview" class="oculto">
+      <div id="pedido-header">
+        <div id="pedido-titulo">🛒 Tu pedido <span id="pedido-cant"></span></div>
+        <span id="pedido-toggle">▲</span>
+      </div>
+      <div id="pedido-items"></div>
+      <div id="pedido-total" style="display:none;">
+        <span>Total estimado</span><span id="total-valor"></span>
+      </div>
+      <div class="pedido-acciones">
+        <button id="btn-limpiar-pedido">Limpiar pedido</button>
+        <button id="btn-historial-pedido">📦 Ver historial</button>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div id="input-area">
+      <div id="input-wrap">
+        <input id="input" type="text" placeholder="Preguntá sobre el menú, horarios..." maxlength="300" autocomplete="off" />
+        <span id="char-count"></span>
+      </div>
+      <button id="btn-enviar">
+        <span class="icono-enviar">
+          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </span>
+        <span class="spinner">
+          <svg class="spinner-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
+            <path d="M12 3 a9 9 0 0 1 9 9" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <button id="btn-abrir" title="Abrir chat">
+    🔥
+    <span id="badge" style="display:none;">0</span>
+  </button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════
+const API_KEY       = "const API_KEY = null;"
+const MAX_CHARS     = 300;
+const MAX_HISTORIAL = 20;
+
+// ═══════════════════════════════════════════
+//  MENÚ
+// ═══════════════════════════════════════════
+const MENU = [
+  { nombre: "Muzzarella",               precio: 8500,  emoji: "🍕",
+    foto: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&q=80" },
+  { nombre: "Napolitana",               precio: 9000,  emoji: "🍕",
+    foto: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80" },
+  { nombre: "Fugazzeta",                precio: 9500,  emoji: "🍕",
+    foto: "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=400&q=80" },
+  { nombre: "Jamón y morrones",         precio: 10000, emoji: "🍕",
+    foto: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80" },
+  { nombre: "Cuatro quesos",            precio: 11000, emoji: "🍕",
+    foto: "https://images.unsplash.com/photo-1528137871618-79d2761e3fd5?w=400&q=80" },
+  { nombre: "Carne cortada a cuchillo", precio: 7500,  emoji: "🥟",
+    foto: "https://images.unsplash.com/photo-1604882737547-6e5a12bfc829?w=400&q=80" },
+  { nombre: "Jamón y queso",            precio: 7000,  emoji: "🥟",
+    foto: "https://images.unsplash.com/photo-1604882737547-6e5a12bfc829?w=400&q=80" },
+  { nombre: "Humita",                   precio: 6500,  emoji: "🥟",
+    foto: "https://images.unsplash.com/photo-1604882737547-6e5a12bfc829?w=400&q=80" },
+  { nombre: "Verdura",                  precio: 6500,  emoji: "🥟",
+    foto: "https://images.unsplash.com/photo-1604882737547-6e5a12bfc829?w=400&q=80" },
+  { nombre: "Chipá",                    precio: 2500,  emoji: "🧀",
+    foto: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80" },
+  { nombre: "Pancho",                   precio: 2500,  emoji: "🌭",
+    foto: "https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=400&q=80" },
+  { nombre: "Coca-Cola",                precio: 2000,  emoji: "🥤", foto: null },
+  { nombre: "Sprite",                   precio: 2000,  emoji: "🥤", foto: null },
+  { nombre: "Fanta",                    precio: 2000,  emoji: "🥤", foto: null },
+  { nombre: "Café negro",               precio: 1500,  emoji: "☕",
+    foto: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80" },
+  { nombre: "Cortado",                  precio: 1800,  emoji: "☕",
+    foto: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80" },
+  { nombre: "Cappuccino",               precio: 2500,  emoji: "☕",
+    foto: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&q=80" },
+  { nombre: "Lágrima",                  precio: 1800,  emoji: "☕",
+    foto: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80" },
+  { nombre: "Café con leche",           precio: 2000,  emoji: "☕",
+    foto: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=80" },
+];
+
+const SUGERENCIAS = {
+  menu:      ["¿Cuánto sale la fugazzeta?", "¿Hacen delivery?", "¿Cuáles son los horarios?"],
+  precios:   ["Quiero pedir una pizza", "¿Tienen empanadas?", "¿Cómo pago?"],
+  horarios:  ["¿Hacen delivery?", "Ver el menú completo", "¿Cuál es el teléfono?"],
+  delivery:  ["¿Cuánto tarda?", "¿Cuál es el mínimo?", "Ver el menú"],
+  contacto:  ["¿Cuál es el horario?", "Ver el menú completo"],
+};
+
+// ═══════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════
+let enviando      = false;
+let pedidoItems   = [];
+let pedidoAbierto = true;
+let mensajes      = [];
+let nombreUsuario = "";
+let analytics     = {
+  sesiones:    0,
+  mensajes:    0,
+  positivas:   0,
+  negativas:   0,
+  calificadas: 0,
+  temas:       {}
+};
+
+// ═══════════════════════════════════════════
+//  ANALYTICS
+// ═══════════════════════════════════════════
+function cargarAnalytics() {
+  try {
+    const raw = localStorage.getItem("mf_analytics");
+    if (raw) analytics = JSON.parse(raw);
+  } catch (_) {}
+}
+
+function guardarAnalytics() {
+  try {
+    localStorage.setItem("mf_analytics", JSON.stringify(analytics));
+  } catch (_) {}
+}
+
+function registrarTema(tema) {
+  if (!tema) return;
+  analytics.temas[tema] = (analytics.temas[tema] || 0) + 1;
+  guardarAnalytics();
+}
+
+function renderAnalytics() {
+  document.getElementById("an-sesiones").textContent    = analytics.sesiones;
+  document.getElementById("an-mensajes").textContent    = analytics.mensajes;
+  document.getElementById("an-calificadas").textContent = analytics.calificadas;
+  document.getElementById("an-positivas").textContent   = analytics.positivas;
+  document.getElementById("an-negativas").textContent   = analytics.negativas;
+  document.getElementById("an-pedidos").textContent     = (JSON.parse(localStorage.getItem("mf_historial_pedidos") || "[]")).length;
+
+  const temasEl = document.getElementById("an-temas");
+  temasEl.innerHTML = "";
+  const sorted = Object.entries(analytics.temas).sort((a,b) => b[1]-a[1]).slice(0, 5);
+  if (sorted.length === 0) {
+    temasEl.innerHTML = '<p style="font-size:12px;color:var(--text-muted)">Sin datos aún.</p>';
+    return;
+  }
+  const max = sorted[0][1];
+  sorted.forEach(([tema, count]) => {
+    const pct = Math.round((count / max) * 100);
+    const nombres = { menu:"Menú", precios:"Precios", horarios:"Horarios", delivery:"Delivery", contacto:"Contacto" };
+    temasEl.innerHTML += `
+      <div class="analytics-bar-wrap">
+        <div class="analytics-bar-label"><span>${nombres[tema] || tema}</span><span>${count} consultas</span></div>
+        <div class="analytics-bar-bg"><div class="analytics-bar-fill" style="width:${pct}%"></div></div>
+      </div>`;
+  });
+}
+
+// ═══════════════════════════════════════════
+//  HISTORIAL DE PEDIDOS
+// ═══════════════════════════════════════════
+function guardarPedidoEnHistorial() {
+  if (pedidoItems.length === 0) return;
+  try {
+    const hist = JSON.parse(localStorage.getItem("mf_historial_pedidos") || "[]");
+    hist.unshift({
+      fecha: new Date().toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" }),
+      items: [...pedidoItems],
+      total: pedidoItems.reduce((a, i) => a + i.precio * i.cantidad, 0)
+    });
+    localStorage.setItem("mf_historial_pedidos", JSON.stringify(hist.slice(0, 10)));
+  } catch (_) {}
+}
+
+function renderHistorial() {
+  const lista = document.getElementById("historial-lista");
+  try {
+    const hist = JSON.parse(localStorage.getItem("mf_historial_pedidos") || "[]");
+    if (hist.length === 0) {
+      lista.innerHTML = '<p class="historial-vacio">Todavía no guardaste ningún pedido.</p>';
+      return;
+    }
+    lista.innerHTML = hist.map(p => `
+      <div class="historial-pedido">
+        <div class="historial-pedido-fecha">📅 ${p.fecha}</div>
+        ${p.items.map(i => `
+          <div class="historial-pedido-item">
+            <span>${i.emoji} ${i.nombre}${i.cantidad > 1 ? ` x${i.cantidad}` : ""}</span>
+            <span>$${(i.precio * i.cantidad).toLocaleString("es-AR")}</span>
+          </div>`).join("")}
+        <div class="historial-pedido-total">Total: $${p.total.toLocaleString("es-AR")}</div>
+      </div>`).join("");
+  } catch (_) {
+    lista.innerHTML = '<p class="historial-vacio">Error al cargar el historial.</p>';
+  }
+}
+
+// ═══════════════════════════════════════════
+//  HORARIO
+// ═══════════════════════════════════════════
+function estaAbierto() {
+  const ahora = new Date();
+  const utc = ahora.getTime() + ahora.getTimezoneOffset() * 60000;
+  const arg = new Date(utc + (-3 * 3600000));
+  const dia = arg.getDay();
+  const min = arg.getHours() * 60 + arg.getMinutes();
+  const mañana = { desde: 8*60+30, hasta: 13*60+30 };
+  const noche  = { desde: 18*60,   hasta: 23*60    };
+  const domN   = { desde: 18*60,   hasta: 22*60    };
+  if (dia === 0) return min >= domN.desde && min < domN.hasta;
+  return (min >= mañana.desde && min < mañana.hasta) || (min >= noche.desde && min < noche.hasta);
+}
+
+function actualizarEstado() {
+  const ab = estaAbierto();
+  document.getElementById("estado-dot").className = ab ? "abierto" : "cerrado";
+  document.getElementById("estado-texto").textContent = ab ? "Abierto ahora" : "Cerrado ahora";
+}
+
+// ═══════════════════════════════════════════
+//  SISTEMA PROMPT
+// ═══════════════════════════════════════════
+function buildSystemPrompt() {
+  const estado = estaAbierto()
+    ? "El local está ABIERTO en este momento."
+    : "El local está CERRADO. Informá el próximo horario disponible si el cliente quiere hacer un pedido.";
+  const nombre = nombreUsuario ? `El cliente se llama ${nombreUsuario}. Usá su nombre cuando sea natural.` : "";
+
+  return `Sos el asistente virtual de Masa & Fuego, una pizzería ubicada en Posadas, Misiones, Argentina.
+Tu rol es atender a los clientes de manera amable, clara y directa. Respondé siempre en español rioplatense (usá "vos", "podés", "tenés").
+${nombre}
+
+== MENÚ ==
+PIZZAS (precio por unidad entera):
+- Muzzarella: $8.500
+- Napolitana: $9.000
+- Fugazzeta: $9.500
+- Jamón y morrones: $10.000
+- Cuatro quesos: $11.000
+
+EMPANADAS (precio por docena):
+- Carne cortada a cuchillo: $7.500
+- Jamón y queso: $7.000
+- Humita: $6.500
+- Verdura: $6.500
+
+CHIPÁ: $2.500 cada 100gr
+PANCHOS: $2.500 c/u (con ketchup, mostaza o mayonesa)
+GASEOSAS (500ml): Coca-Cola, Sprite o Fanta: $2.000 c/u
+CAFÉS: Café negro: $1.500 | Cortado: $1.800 | Cappuccino: $2.500 | Lágrima: $1.800 | Café con leche: $2.000
+
+== HORARIOS ==
+- Lunes a sábado: 8:30 a 13:30 y 18:00 a 23:00
+- Domingo: 18:00 a 22:00
+
+== ESTADO ACTUAL ==
+${estado}
+
+== IMPORTANTE ==
+- Trabajamos con takeaway y también hacemos delivery.
+- Si el cliente pregunta algo que no sabés, decile que puede llamarnos al +54 376 4123456 o escribirnos por Instagram @masayfuego.pos
+
+Sé simpático, breve y útil. No inventes información. Para el menú completo, usá este formato:
+🍕 Pizzas: Muzzarella, Napolitana, Fugazzeta, Jamón y morrones, Cuatro quesos.
+🥟 Empanadas (por docena): Carne cortada a cuchillo, Jamón y queso, Humita, Verdura.
+🧀 Chipá: $2.500 cada 100gr.
+🌭 Panchos: $2.500 c/u.
+🥤 Gaseosas: Coca-Cola, Sprite o Fanta (500ml).
+☕ Cafés: Negro, Cortado, Cappuccino, Lágrima, Café con leche.
+
+Para otras respuestas, escribí de forma conversacional y natural.`;
+}
+
+// ═══════════════════════════════════════════
+//  HELPERS UI
+// ═══════════════════════════════════════════
+function scrollAlFondo(forzar = false) {
+  const el = document.getElementById("messages");
+  const yaAbajo = el.scrollHeight - el.clientHeight - el.scrollTop < 60;
+  if (forzar || yaAbajo) el.scrollTop = el.scrollHeight;
+}
+
+function hora() {
+  return new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+}
+
+function agregarMensaje(texto, quien) {
+  const msgs = document.getElementById("messages");
+  const div = document.createElement("div");
+  div.className = `mensaje ${quien}`;
+
+  if (quien === "escribiendo") {
+    const dots = document.createElement("div");
+    dots.className = "typing-dots";
+    dots.innerHTML = "<span></span><span></span><span></span>";
+    div.appendChild(dots);
+  } else if (quien === "toast") {
+    div.className = "toast";
+    div.textContent = texto;
+  } else {
+    const contenido = document.createElement("div");
+    texto.split("\n").forEach((linea, i, arr) => {
+      contenido.appendChild(document.createTextNode(linea));
+      if (i < arr.length - 1) contenido.appendChild(document.createElement("br"));
+    });
+    const h = document.createElement("div");
+    h.className = "msg-hora";
+    h.textContent = hora();
+    div.appendChild(contenido);
+    div.appendChild(h);
+
+    // Calificación para mensajes del bot
+    if (quien === "bot") {
+      const ratingWrap = document.createElement("div");
+      ratingWrap.className = "msg-rating";
+      const btnPos = document.createElement("button");
+      btnPos.className = "btn-rating";
+      btnPos.textContent = "👍";
+      const btnNeg = document.createElement("button");
+      btnNeg.className = "btn-rating";
+      btnNeg.textContent = "👎";
+      const gracias = document.createElement("span");
+      gracias.className = "rating-gracias";
+      gracias.style.display = "none";
+      gracias.textContent = "¡Gracias!";
+
+      function calificar(positivo) {
+        if (btnPos.disabled) return;
+        btnPos.disabled = true;
+        btnNeg.disabled = true;
+        btnPos.classList.toggle("activo-positivo", positivo);
+        btnNeg.classList.toggle("activo-negativo", !positivo);
+        gracias.style.display = "inline";
+        analytics.calificadas++;
+        if (positivo) analytics.positivas++;
+        else analytics.negativas++;
+        guardarAnalytics();
+      }
+
+      btnPos.addEventListener("click", () => calificar(true));
+      btnNeg.addEventListener("click", () => calificar(false));
+      ratingWrap.appendChild(btnPos);
+      ratingWrap.appendChild(btnNeg);
+      ratingWrap.appendChild(gracias);
+      div.appendChild(ratingWrap);
+    }
+  }
+
+  msgs.appendChild(div);
+  scrollAlFondo(true);
+  return div;
+}
+
+// Añadir foto de plato a un mensaje
+function agregarFotoPlato(item) {
+  if (!item.foto) return;
+  const msgs = document.getElementById("messages");
+  const wrap = document.createElement("div");
+  wrap.className = "msg-foto";
+  wrap.style.alignSelf = "flex-start";
+  wrap.style.animation = "msgEnter 0.3s ease both";
+  const img = document.createElement("img");
+  img.src = item.foto;
+  img.alt = item.nombre;
+  img.loading = "lazy";
+  img.onerror = () => wrap.remove();
+  wrap.appendChild(img);
+  msgs.appendChild(wrap);
+  scrollAlFondo(true);
+}
+
+function setBtnCargando(estado) {
+  const btn = document.getElementById("btn-enviar");
+  btn.disabled = estado;
+  btn.classList.toggle("cargando", estado);
+}
+
+// ═══════════════════════════════════════════
+//  DETECCIÓN DE ÍTEMS
+// ═══════════════════════════════════════════
+function detectarItems(texto) {
+  const lower = texto.toLowerCase();
+  return MENU.filter(item => lower.includes(item.nombre.toLowerCase()));
+}
+
+// ═══════════════════════════════════════════
+//  PEDIDO
+// ═══════════════════════════════════════════
+function actualizarPedido(items) {
+  items.forEach(item => {
+    const existe = pedidoItems.find(i => i.nombre === item.nombre);
+    if (!existe) pedidoItems.push({ ...item, cantidad: 1 });
+    else existe.cantidad++;
+  });
+  renderPedido(true);
+}
+
+function renderPedido(animarUltimo = false) {
+  const preview  = document.getElementById("pedido-preview");
+  const cont     = document.getElementById("pedido-items");
+  const total    = document.getElementById("pedido-total");
+  const totalVal = document.getElementById("total-valor");
+  const cant     = document.getElementById("pedido-cant");
+
+  if (pedidoItems.length === 0) { preview.classList.add("oculto"); return; }
+
+  preview.classList.remove("oculto");
+  cont.innerHTML = "";
+  let suma = 0;
+
+  pedidoItems.forEach((item, idx) => {
+    suma += item.precio * item.cantidad;
+    const row = document.createElement("div");
+    row.className = "pedido-item";
+    if (animarUltimo && idx === pedidoItems.length - 1) row.classList.add("item-nuevo");
+    row.innerHTML = `<span>${item.emoji} ${item.nombre}${item.cantidad > 1 ? ` x${item.cantidad}` : ""}</span><span>$${(item.precio * item.cantidad).toLocaleString("es-AR")}</span>`;
+    cont.appendChild(row);
+  });
+
+  total.style.display = "flex";
+  totalVal.textContent = `$${suma.toLocaleString("es-AR")}`;
+  cant.textContent = `(${pedidoItems.reduce((a, i) => a + i.cantidad, 0)})`;
+}
+
+function limpiarPedido() {
+  guardarPedidoEnHistorial();
+  pedidoItems = [];
+  renderPedido();
+  agregarMensaje("✅ Pedido guardado en tu historial.", "bot");
+}
+
+document.getElementById("pedido-header").addEventListener("click", () => {
+  pedidoAbierto = !pedidoAbierto;
+  document.getElementById("pedido-items").classList.toggle("oculto", !pedidoAbierto);
+  document.getElementById("pedido-total").style.display = pedidoAbierto ? "flex" : "none";
+  document.querySelector(".pedido-acciones").style.display = pedidoAbierto ? "" : "none";
+  document.getElementById("pedido-toggle").classList.toggle("abierto", pedidoAbierto);
+});
+
+document.getElementById("btn-limpiar-pedido").addEventListener("click", limpiarPedido);
+
+document.getElementById("btn-historial-pedido").addEventListener("click", () => {
+  renderHistorial();
+  document.getElementById("modal-historial").classList.add("visible");
+});
+
+document.getElementById("btn-cerrar-modal").addEventListener("click", () => {
+  document.getElementById("modal-historial").classList.remove("visible");
+});
+
+// ═══════════════════════════════════════════
+//  SUGERENCIAS
+// ═══════════════════════════════════════════
+function detectarContexto(texto) {
+  const t = texto.toLowerCase();
+  if (t.includes("menú") || t.includes("menu") || t.includes("carta")) return "menu";
+  if (t.includes("precio") || t.includes("cuánto") || t.includes("vale") || t.includes("cuesta")) return "precios";
+  if (t.includes("horario") || t.includes("abierto") || t.includes("cerrado") || t.includes("hora")) return "horarios";
+  if (t.includes("delivery") || t.includes("envío") || t.includes("pedido") || t.includes("llevar")) return "delivery";
+  if (t.includes("teléfono") || t.includes("instagram") || t.includes("contacto") || t.includes("llamar")) return "contacto";
+  return null;
+}
+
+function mostrarSugerencias(contexto) {
+  const lista = SUGERENCIAS[contexto];
+  if (!lista) return;
+  const wrap = document.createElement("div");
+  wrap.className = "sugerencias-wrap";
+  lista.forEach(texto => {
+    const btn = document.createElement("button");
+    btn.className = "btn-sugerencia";
+    btn.textContent = texto;
+    btn.addEventListener("click", () => {
+      wrap.remove();
+      document.getElementById("input").value = texto;
+      enviarMensaje();
+    });
+    wrap.appendChild(btn);
+  });
+  document.getElementById("messages").appendChild(wrap);
+  scrollAlFondo(true);
+}
+
+// ═══════════════════════════════════════════
+//  BOTONES RÁPIDOS
+// ═══════════════════════════════════════════
+function mostrarBotonesRapidos() {
+  const wrap = document.createElement("div");
+  wrap.className = "botones-rapidos-wrap";
+  ["📋 Ver menú", "🕐 Horarios", "📞 Contacto"].forEach(texto => {
+    const btn = document.createElement("button");
+    btn.className = "btn-rapido";
+    btn.textContent = texto;
+    btn.addEventListener("click", () => {
+      wrap.remove();
+      document.getElementById("input").value = texto.replace(/📋|🕐|📞/g, "").trim();
+      enviarMensaje();
+    });
+    wrap.appendChild(btn);
+  });
+  document.getElementById("messages").appendChild(wrap);
+  scrollAlFondo(true);
+}
+
+// ═══════════════════════════════════════════
+//  API
+// ═══════════════════════════════════════════
+async function llamarAPI() {
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: mensajes })
+  });
+  if (!res.ok) throw new Error("api_error");
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+// ═══════════════════════════════════════════
+//  ENVIAR MENSAJE
+// ═══════════════════════════════════════════
+async function enviarMensaje() {
+  const input = document.getElementById("input");
+  const texto = input.value.trim();
+  if (!texto || enviando) return;
+
+  enviando = true;
+  setBtnCargando(true);
+  input.value = "";
+  actualizarCharCount();
+
+  analytics.mensajes++;
+  guardarAnalytics();
+
+  agregarMensaje(texto, "usuario");
+  mensajes.push({ role: "user", content: texto });
+  guardarHistorial();
+
+  const typing = agregarMensaje("", "escribiendo");
+
+  try {
+    const respuesta = await llamarAPI();
+    typing.remove();
+    reproducirSonido();
+    agregarMensaje(respuesta, "bot");
+    mensajes.push({ role: "assistant", content: respuesta });
+    guardarHistorial();
+
+    // Fotos de platos
+    const items = detectarItems(respuesta);
+    if (items.length > 0) {
+      actualizarPedido(items);
+      // Mostrar foto solo del primer ítem reconocido con foto
+      const conFoto = items.find(i => i.foto);
+      if (conFoto) agregarFotoPlato(conFoto);
+    }
+
+    // Contexto y analytics
+    const contexto = detectarContexto(texto) || detectarContexto(respuesta);
+    if (contexto) {
+      mostrarSugerencias(contexto);
+      registrarTema(contexto);
+    }
+
+    if (document.getElementById("chat-container").classList.contains("minimizado")) {
+      const badge = document.getElementById("badge");
+      badge.style.display = "flex";
+      badge.textContent = parseInt(badge.textContent || 0) + 1;
+    }
+  } catch (e) {
+    typing.remove();
+    const msg = e.message === "rate_limit"
+      ? "Demasiadas consultas seguidas. Esperá un momento y volvé a intentarlo."
+      : "No se pudo conectar con el servidor. Revisá tu conexión.";
+    agregarMensaje(msg, "toast");
+    console.error(e);
+  } finally {
+    enviando = false;
+    setBtnCargando(false);
+    input.focus();
+  }
+}
+
+// ═══════════════════════════════════════════
+//  HISTORIAL CHAT
+// ═══════════════════════════════════════════
+function guardarHistorial() {
+  try {
+    localStorage.setItem("mf_historial", JSON.stringify(mensajes.slice(-MAX_HISTORIAL)));
+  } catch (_) {}
+}
+
+function cargarHistorial() {
+  try {
+    const raw = localStorage.getItem("mf_historial");
+    if (!raw) return false;
+    const hist = JSON.parse(raw);
+    if (!Array.isArray(hist) || hist.length === 0) return false;
+    mensajes = hist;
+    return true;
+  } catch (_) { return false; }
+}
+
+function restaurarMensajesUI() {
+  mensajes.forEach(m => {
+    if (m.role === "user" || m.role === "assistant")
+      agregarMensaje(m.content, m.role === "user" ? "usuario" : "bot");
+  });
+}
+
+function resetearChat() {
+  if (!confirm("¿Querés borrar la conversación y empezar de nuevo?")) return;
+  mensajes = [];
+  pedidoItems = [];
+  localStorage.removeItem("mf_historial");
+  document.getElementById("messages").innerHTML = "";
+  renderPedido();
+  iniciarChat();
+}
+
+// ═══════════════════════════════════════════
+//  SOUND
+// ═══════════════════════════════════════════
+function reproducirSonido() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch(_) {}
+}
+
+// ═══════════════════════════════════════════
+//  MODO OSCURO
+// ═══════════════════════════════════════════
+function aplicarTema(oscuro) {
+  document.body.classList.toggle("dark", oscuro);
+  document.getElementById("btn-tema").textContent = oscuro ? "☀️" : "🌙";
+}
+
+// ═══════════════════════════════════════════
+//  CHAR COUNT
+// ═══════════════════════════════════════════
+function actualizarCharCount() {
+  const input = document.getElementById("input");
+  const count = document.getElementById("char-count");
+  const len = input.value.length;
+  const cerca = len >= MAX_CHARS * 0.8;
+  count.textContent = cerca ? `${len}/${MAX_CHARS}` : "";
+  count.classList.toggle("limite", len >= MAX_CHARS);
+}
+
+// ═══════════════════════════════════════════
+//  NOMBRE DE USUARIO
+// ═══════════════════════════════════════════
+function pedirNombre() {
+  return new Promise(resolve => {
+    const modal = document.getElementById("modal-nombre");
+    const inputEl = document.getElementById("nombre-input");
+    modal.classList.add("visible");
+    inputEl.focus();
+
+    function guardar() {
+      const val = inputEl.value.trim();
+      nombreUsuario = val;
+      if (val) localStorage.setItem("mf_nombre", val);
+      modal.classList.remove("visible");
+      resolve(val);
+    }
+
+    document.getElementById("btn-guardar-nombre").addEventListener("click", guardar);
+    document.getElementById("btn-saltar-nombre").addEventListener("click", () => {
+      modal.classList.remove("visible");
+      resolve("");
+    });
+    inputEl.addEventListener("keydown", e => {
+      if (e.key === "Enter") guardar();
+    });
+  });
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+async function iniciarChat() {
+  actualizarEstado();
+  const hayHistorial = cargarHistorial();
+
+  if (hayHistorial) {
+    restaurarMensajesUI();
+    const sep = document.createElement("div");
+    sep.style.cssText = "text-align:center;font-size:11px;color:var(--text-muted);padding:4px 0;";
+    sep.textContent = "— Conversación anterior restaurada —";
+    document.getElementById("messages").appendChild(sep);
+    scrollAlFondo(true);
+  } else {
+    const abierto = estaAbierto();
+    const saludo = nombreUsuario
+      ? (abierto
+          ? `¡Hola ${nombreUsuario}! 🔥 Bienvenido de nuevo a Masa & Fuego. ¿En qué te puedo ayudar?`
+          : `¡Hola de nuevo, ${nombreUsuario}! 🌙 Estamos cerrados ahora, pero podés consultarnos lo que quieras.`)
+      : (abierto
+          ? "¡Bienvenido a Masa & Fuego! 🔥 ¿En qué te puedo ayudar?"
+          : "¡Hola! Ahora estamos cerrados 🌙, pero podés consultarnos lo que quieras para cuando abramos.");
+    agregarMensaje(saludo, "bot");
+    mostrarBotonesRapidos();
+  }
+}
+
+// ═══════════════════════════════════════════
+//  ANALYTICS PANEL
+// ═══════════════════════════════════════════
+document.getElementById("btn-cerrar-analytics").addEventListener("click", () => {
+  document.getElementById("panel-analytics").classList.remove("visible");
+  document.getElementById("analytics-overlay").classList.remove("visible");
+});
+document.getElementById("analytics-overlay").addEventListener("click", () => {
+  document.getElementById("panel-analytics").classList.remove("visible");
+  document.getElementById("analytics-overlay").classList.remove("visible");
+});
+
+// ═══════════════════════════════════════════
+//  LOAD
+// ═══════════════════════════════════════════
+window.addEventListener("load", async () => {
+  const temaGuardado = localStorage.getItem("mf_tema") === "oscuro";
+  aplicarTema(temaGuardado);
+  cargarAnalytics();
+  analytics.sesiones++;
+  guardarAnalytics();
+
+  // Nombre
+  const nombreGuardado = localStorage.getItem("mf_nombre");
+  if (nombreGuardado) {
+    nombreUsuario = nombreGuardado;
+  } else {
+    nombreUsuario = await pedirNombre();
+  }
+
+  await iniciarChat();
+
+  // Eventos
+  document.getElementById("btn-tema").addEventListener("click", () => {
+    const esOscuro = document.body.classList.contains("dark");
+    localStorage.setItem("mf_tema", esOscuro ? "claro" : "oscuro");
+    aplicarTema(!esOscuro);
+  });
+
+  document.getElementById("btn-reset").addEventListener("click", resetearChat);
+
+  document.getElementById("btn-minimizar").addEventListener("click", () => {
+    const c = document.getElementById("chat-container");
+    c.classList.add("minimizado");
+    setTimeout(() => {
+      c.style.display = "none";
+      document.getElementById("btn-abrir").classList.add("visible");
+    }, 250);
+  });
+
+  document.getElementById("btn-cerrar").addEventListener("click", () => {
+    document.getElementById("chat-wrapper").style.display = "none";
+  });
+
+  document.getElementById("btn-abrir").addEventListener("click", () => {
+    const c = document.getElementById("chat-container");
+    c.style.display = "flex";
+    void c.offsetWidth;
+    c.classList.remove("minimizado");
+    document.getElementById("btn-abrir").classList.remove("visible");
+    const badge = document.getElementById("badge");
+    badge.style.display = "none";
+    badge.textContent = "0";
+    scrollAlFondo(true);
+  });
+
+  document.getElementById("btn-enviar").addEventListener("click", enviarMensaje);
+
+  document.getElementById("input").addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviarMensaje(); }
+  });
+
+  document.getElementById("input").addEventListener("input", actualizarCharCount);
+
+  // Shortcut secreto: Ctrl+Shift+A
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.shiftKey && e.key === "A") {
+      e.preventDefault();
+      renderAnalytics();
+      document.getElementById("panel-analytics").classList.toggle("visible");
+      document.getElementById("analytics-overlay").classList.toggle("visible");
+    }
+  });
+});
+</script>
+</body>
+</html>
