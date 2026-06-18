@@ -1503,31 +1503,17 @@ function pedirNombre() {
 // ═══════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════
-async function iniciarChat() {
-  actualizarEstado();
-  const hayHistorial = cargarHistorial();
-
-  if (hayHistorial) {
-    restaurarMensajesUI();
-    const sep = document.createElement("div");
-    sep.style.cssText = "text-align:center;font-size:11px;color:var(--text-muted);padding:4px 0;";
-    sep.textContent = "— Conversación anterior restaurada —";
-    document.getElementById("messages").appendChild(sep);
-    scrollAlFondo(true);
-  } else {
-    const abierto = estaAbierto();
-    const saludo = nombreUsuario
-      ? (abierto
-          ? `¡Hola ${nombreUsuario}! 🔥 Bienvenido de nuevo a Masa & Fuego. ¿En qué te puedo ayudar?`
-          : `¡Hola de nuevo, ${nombreUsuario}! 🌙 Estamos cerrados ahora, pero podés consultarnos lo que quieras.`)
-      : (abierto
-          ? "¡Bienvenido a Masa & Fuego! 🔥 ¿En qué te puedo ayudar?"
-          : "¡Hola! Ahora estamos cerrados 🌙, pero podés consultarnos lo que quieras para cuando abramos.");
-    agregarMensaje(saludo, "bot");
-    mostrarBotonesRapidos();
-  }
+async function llamarAPI() {
+  const payload = [{ role: "system", content: buildSystemPrompt() }, ...mensajes];
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: payload })
+  });
+  if (!res.ok) throw new Error("api_error");
+  const data = await res.json();
+  return data.choices[0].message.content;
 }
-
 // ═══════════════════════════════════════════
 //  ANALYTICS PANEL
 // ═══════════════════════════════════════════
