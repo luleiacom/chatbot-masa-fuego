@@ -855,8 +855,8 @@
 <script>
 // ═══════════════════════════════════════════
 //  CONFIG
-// ═══════════════════════════════════════════
-const API_KEY       = "const API_KEY = null;"
+// ══════════════════════════════════════════
+const API_KEY       = null;
 const MAX_CHARS     = 300;
 const MAX_HISTORIAL = 20;
 
@@ -1080,10 +1080,10 @@ ${estado}
 - Si el cliente pregunta algo que no sabés, decile que puede llamarnos al +54 376 4123456 o escribirnos por Instagram @masayfuego.pos
 
 Sé simpático, breve y útil. No inventes información.
-NUNCA uses guiones, asteriscos ni viñetas en tus respuestas, bajo ninguna circunstancia. Escribí siempre en prosa corrida, como si hablaras en persona.
-Para el menú completo, usá exactamente este formato (con los emojis, sin guiones).
+Cuando menciones cualquier categoría del menú (pizzas, empanadas, chipá, panchos, gaseosas o cafés), empezá esa parte con su emoji correspondiente: 🍕 Pizzas, 🥟 Empanadas, 🧀 Chipá, 🌭 Panchos, 🥤 Gaseosas, ☕ Cafés. Esto aplica tanto si te preguntan por el menú completo como por una categoría puntual.
+Para el menú completo, usá exactamente este formato (con los emojis, sin guiones):
 🍕 Pizzas: Muzzarella, Napolitana, Fugazzeta, Jamón y morrones, Cuatro quesos.
-🥟 Empanadas (por docena): Carne cortada a cuchillo, Jamón y queso, Humita, Verdura, Cebolla y Queso, Pollo con queso, .
+🥟 Empanadas (por docena): Carne cortada a cuchillo, Jamón y queso, Humita, Verdura.
 🧀 Chipá: $2.500 cada 100gr.
 🌭 Panchos: $2.500 c/u.
 🥤 Gaseosas: Coca-Cola, Sprite o Fanta (500ml).
@@ -1236,13 +1236,13 @@ function renderPedido(animarUltimo = false) {
     const row = document.createElement("div");
     row.className = "pedido-item";
     if (animarUltimo && idx === pedidoItems.length - 1) row.classList.add("item-nuevo");
-    row.innerHTML = `<span>${item.emoji} ${item.nombre}${item.cantidad > 1 ? ` x${item.cantidad}` : ""}</span><span>$${(item.precio * item.cantidad).toLocaleString("es-AR")}</span>`;
+    row.innerHTML = <span>${item.emoji} ${item.nombre}${item.cantidad > 1 ? x${item.cantidad} : ""}</span><span>$${(item.precio * item.cantidad).toLocaleString("es-AR")}</span>`;
     cont.appendChild(row);
   });
 
   total.style.display = "flex";
-  totalVal.textContent = `$${suma.toLocaleString("es-AR")}`;
-  cant.textContent = `(${pedidoItems.reduce((a, i) => a + i.cantidad, 0)})`;
+  totalVal.textContent = $${suma.toLocaleString("es-AR")};
+  cant.textContent = (${pedidoItems.reduce((a, i) => a + i.cantidad, 0)});
 }
 
 function limpiarPedido() {
@@ -1476,7 +1476,7 @@ function actualizarCharCount() {
   const count = document.getElementById("char-count");
   const len = input.value.length;
   const cerca = len >= MAX_CHARS * 0.8;
-  count.textContent = cerca ? `${len}/${MAX_CHARS}` : "";
+  count.textContent = cerca ? ${len}/${MAX_CHARS} : "";
   count.classList.toggle("limite", len >= MAX_CHARS);
 }
 
