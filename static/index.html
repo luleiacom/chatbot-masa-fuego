@@ -1194,6 +1194,8 @@ function setBtnCargando(estado) {
 // ═══════════════════════════════════════════
 function detectarItems(texto) {
   const lower = texto.toLowerCase();
+  const intencionPedido = /quiero|pedir|pedido|me das|me da|dame|llevar|encargar|sumá|agregá|añadí/.test(lower);
+  if (!intencionPedido) return [];
   return MENU.filter(item => lower.includes(item.nombre.toLowerCase()));
 }
 
@@ -1361,7 +1363,7 @@ async function enviarMensaje() {
     guardarHistorial();
 
     // Fotos de platos
-    const items = detectarItems(respuesta);
+    const items = detectarItems(texto);
     if (items.length > 0) {
       actualizarPedido(items);
       // Mostrar foto solo del primer ítem reconocido con foto
