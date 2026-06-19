@@ -64,7 +64,7 @@
     #chat-container {
       background: var(--bg-chat);
       width: 380px;
-      height:  min(620px, calc(100vh - 80px));
+      height: min(620px, calc(100vh - 80px));
       border-radius: 18px;
       box-shadow: var(--shadow);
       display: flex;
@@ -99,7 +99,7 @@
       #messages { flex: 1; min-height: 0; }
     }
 
-    /* ── Header ── */
+    /* Header */
     #chat-header {
       display: flex;
       align-items: center;
@@ -143,7 +143,7 @@
     }
     .btn-accion:hover { background: var(--accent-light); color: var(--accent); }
 
-    /* ── Mensajes ── */
+    /* Mensajes */
     #messages {
       flex: 1;
       padding: 16px;
@@ -153,14 +153,15 @@
       gap: 8px;
       scroll-behavior: smooth;
     }
+
     #messages::-webkit-scrollbar { width: 12px; }
-#messages::-webkit-scrollbar-track { background: transparent; }
-#messages::-webkit-scrollbar-thumb {
-  background: var(--accent);
-  border-radius: 4px;
-  opacity: 0.6;
-}
-#messages::-webkit-scrollbar-thumb:hover { background: var(--accent-dark); }
+    #messages::-webkit-scrollbar-track { background: transparent; }
+    #messages::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 4px;
+      opacity: 0.6;
+    }
+    #messages::-webkit-scrollbar-thumb:hover { background: var(--accent-dark); }
 
     .mensaje {
       padding: 10px 14px;
@@ -200,7 +201,7 @@
     }
     .bot .msg-hora { color: var(--text-muted); }
 
-    /* ── Calificación ── */
+    /* Calificacion */
     .msg-rating {
       display: flex;
       gap: 4px;
@@ -223,7 +224,7 @@
     .btn-rating.activo-negativo { background: rgba(231,76,60,0.12); border-color: var(--danger); color: var(--danger); }
     .rating-gracias { font-size: 10.5px; color: var(--text-muted); font-style: italic; }
 
-    /* ── Foto de plato ── */
+    /* Foto de plato */
     .msg-foto {
       margin-top: 8px;
       border-radius: 10px;
@@ -240,7 +241,7 @@
     }
     .msg-foto img:hover { transform: scale(1.03); }
 
-    /* ── Typing dots ── */
+    /* Typing dots */
     .escribiendo {
       background: var(--bg-mensaje);
       align-self: flex-start;
@@ -262,7 +263,7 @@
       30%            { transform: translateY(-5px); opacity: 1; }
     }
 
-    /* ── Botones rápidos ── */
+    /* Botones rapidos */
     .botones-rapidos-wrap {
       display: flex;
       gap: 7px;
@@ -289,7 +290,7 @@
       color: #FAFAFA;
     }
 
-    /* ── Sugerencias dinámicas ── */
+    /* Sugerencias dinamicas */
     .sugerencias-wrap {
       display: flex;
       gap: 7px;
@@ -310,7 +311,7 @@
     }
     .btn-sugerencia:hover { background: var(--accent); color: #FAFAFA; }
 
-    /* ── Vista previa del pedido ── */
+    /* Vista previa del pedido */
     #pedido-preview {
       border-top: 1px solid var(--border);
       background: var(--bg-chat);
@@ -394,7 +395,7 @@
     #btn-limpiar-pedido:hover { color: var(--danger); }
     #btn-historial-pedido:hover { color: var(--accent); }
 
-    /* ── Modal historial de pedidos ── */
+    /* Modal historial de pedidos */
     #modal-historial {
       display: none;
       position: fixed;
@@ -466,7 +467,7 @@
       padding: 20px 0;
     }
 
-    /* ── Input area ── */
+    /* Input area */
     #input-area {
       display: flex;
       align-items: center;
@@ -530,7 +531,7 @@
     }
     @keyframes girar { to { transform: rotate(360deg); } }
 
-    /* ── Botón abrir ── */
+    /* Boton abrir */
     #btn-abrir {
       display: none;
       background: var(--accent);
@@ -560,7 +561,7 @@
       font-weight: 600;
     }
 
-    /* ── Toast ── */
+    /* Toast */
     .toast {
       align-self: center;
       background: var(--danger);
@@ -573,7 +574,7 @@
       animation: msgEnter 0.2s ease both;
     }
 
-    /* ── Panel de Analytics ── */
+    /* Panel de Analytics */
     #panel-analytics {
       display: none;
       position: fixed;
@@ -671,7 +672,7 @@
       font-style: italic;
     }
 
-    /* ── Modal nombre ── */
+    /* Modal nombre */
     #modal-nombre {
       display: none;
       position: fixed;
@@ -737,7 +738,7 @@
       text-decoration: underline;
     }
 
-    /* ── Animación item pedido nuevo ── */
+    /* Animacion item pedido nuevo */
     @keyframes itemPop {
       0%   { transform: scale(1); }
       50%  { transform: scale(1.08); }
@@ -853,16 +854,15 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════
+// ============================================
 //  CONFIG
-// ══════════════════════════════════════════
-const API_KEY       = null;
+// ============================================
 const MAX_CHARS     = 300;
 const MAX_HISTORIAL = 20;
 
-// ═══════════════════════════════════════════
-//  MENÚ
-// ═══════════════════════════════════════════
+// ============================================
+//  MENU
+// ============================================
 const MENU = [
   { nombre: "Muzzarella",               precio: 8500,  emoji: "🍕",
     foto: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&q=80" },
@@ -909,9 +909,9 @@ const SUGERENCIAS = {
   contacto:  ["¿Cuál es el horario?", "Ver el menú completo"],
 };
 
-// ═══════════════════════════════════════════
+// ============================================
 //  ESTADO
-// ═══════════════════════════════════════════
+// ============================================
 let enviando      = false;
 let pedidoItems   = [];
 let pedidoAbierto = true;
@@ -926,20 +926,20 @@ let analytics     = {
   temas:       {}
 };
 
-// ═══════════════════════════════════════════
+// ============================================
 //  ANALYTICS
-// ═══════════════════════════════════════════
+// ============================================
 function cargarAnalytics() {
   try {
     const raw = localStorage.getItem("mf_analytics");
     if (raw) analytics = JSON.parse(raw);
-  } catch (_) {}
+  } catch (e) {}
 }
 
 function guardarAnalytics() {
   try {
     localStorage.setItem("mf_analytics", JSON.stringify(analytics));
-  } catch (_) {}
+  } catch (e) {}
 }
 
 function registrarTema(tema) {
@@ -958,37 +958,40 @@ function renderAnalytics() {
 
   const temasEl = document.getElementById("an-temas");
   temasEl.innerHTML = "";
-  const sorted = Object.entries(analytics.temas).sort((a,b) => b[1]-a[1]).slice(0, 5);
+  const sorted = Object.entries(analytics.temas).sort(function(a,b){ return b[1]-a[1]; }).slice(0, 5);
   if (sorted.length === 0) {
     temasEl.innerHTML = '<p style="font-size:12px;color:var(--text-muted)">Sin datos aún.</p>';
     return;
   }
   const max = sorted[0][1];
-  sorted.forEach(([tema, count]) => {
+  const nombres = { menu:"Menú", precios:"Precios", horarios:"Horarios", delivery:"Delivery", contacto:"Contacto" };
+  sorted.forEach(function(entry) {
+    const tema = entry[0];
+    const count = entry[1];
     const pct = Math.round((count / max) * 100);
-    const nombres = { menu:"Menú", precios:"Precios", horarios:"Horarios", delivery:"Delivery", contacto:"Contacto" };
-    temasEl.innerHTML += `
-      <div class="analytics-bar-wrap">
-        <div class="analytics-bar-label"><span>${nombres[tema] || tema}</span><span>${count} consultas</span></div>
-        <div class="analytics-bar-bg"><div class="analytics-bar-fill" style="width:${pct}%"></div></div>
-      </div>`;
+    temasEl.innerHTML += '<div class="analytics-bar-wrap">' +
+        '<div class="analytics-bar-label"><span>' + (nombres[tema] || tema) + '</span><span>' + count + ' consultas</span></div>' +
+        '<div class="analytics-bar-bg"><div class="analytics-bar-fill" style="width:' + pct + '%"></div></div>' +
+      '</div>';
   });
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  HISTORIAL DE PEDIDOS
-// ═══════════════════════════════════════════
+// ============================================
 function guardarPedidoEnHistorial() {
   if (pedidoItems.length === 0) return;
   try {
     const hist = JSON.parse(localStorage.getItem("mf_historial_pedidos") || "[]");
+    let total = 0;
+    pedidoItems.forEach(function(i){ total += i.precio * i.cantidad; });
     hist.unshift({
       fecha: new Date().toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" }),
-      items: [...pedidoItems],
-      total: pedidoItems.reduce((a, i) => a + i.precio * i.cantidad, 0)
+      items: pedidoItems.slice(),
+      total: total
     });
     localStorage.setItem("mf_historial_pedidos", JSON.stringify(hist.slice(0, 10)));
-  } catch (_) {}
+  } catch (e) {}
 }
 
 function renderHistorial() {
@@ -999,35 +1002,40 @@ function renderHistorial() {
       lista.innerHTML = '<p class="historial-vacio">Todavía no guardaste ningún pedido.</p>';
       return;
     }
-    lista.innerHTML = hist.map(p => `
-      <div class="historial-pedido">
-        <div class="historial-pedido-fecha">📅 ${p.fecha}</div>
-        ${p.items.map(i => `
-          <div class="historial-pedido-item">
-            <span>${i.emoji} ${i.nombre}${i.cantidad > 1 ? ` x${i.cantidad}` : ""}</span>
-            <span>$${(i.precio * i.cantidad).toLocaleString("es-AR")}</span>
-          </div>`).join("")}
-        <div class="historial-pedido-total">Total: $${p.total.toLocaleString("es-AR")}</div>
-      </div>`).join("");
-  } catch (_) {
+    let html = "";
+    hist.forEach(function(p) {
+      html += '<div class="historial-pedido">';
+      html += '<div class="historial-pedido-fecha">📅 ' + p.fecha + '</div>';
+      p.items.forEach(function(i) {
+        const cantTxt = i.cantidad > 1 ? (" x" + i.cantidad) : "";
+        html += '<div class="historial-pedido-item">' +
+          '<span>' + i.emoji + ' ' + i.nombre + cantTxt + '</span>' +
+          '<span>$' + (i.precio * i.cantidad).toLocaleString("es-AR") + '</span>' +
+        '</div>';
+      });
+      html += '<div class="historial-pedido-total">Total: $' + p.total.toLocaleString("es-AR") + '</div>';
+      html += '</div>';
+    });
+    lista.innerHTML = html;
+  } catch (e) {
     lista.innerHTML = '<p class="historial-vacio">Error al cargar el historial.</p>';
   }
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  HORARIO
-// ═══════════════════════════════════════════
+// ============================================
 function estaAbierto() {
   const ahora = new Date();
   const utc = ahora.getTime() + ahora.getTimezoneOffset() * 60000;
   const arg = new Date(utc + (-3 * 3600000));
   const dia = arg.getDay();
   const min = arg.getHours() * 60 + arg.getMinutes();
-  const mañana = { desde: 8*60+30, hasta: 13*60+30 };
+  const manana = { desde: 8*60+30, hasta: 13*60+30 };
   const noche  = { desde: 18*60,   hasta: 23*60    };
   const domN   = { desde: 18*60,   hasta: 22*60    };
   if (dia === 0) return min >= domN.desde && min < domN.hasta;
-  return (min >= mañana.desde && min < mañana.hasta) || (min >= noche.desde && min < noche.hasta);
+  return (min >= manana.desde && min < manana.hasta) || (min >= noche.desde && min < noche.hasta);
 }
 
 function actualizarEstado() {
@@ -1036,66 +1044,61 @@ function actualizarEstado() {
   document.getElementById("estado-texto").textContent = ab ? "Abierto ahora" : "Cerrado ahora";
 }
 
-// ═══════════════════════════════════════════
-//  SISTEMA PROMPT
-// ═══════════════════════════════════════════
+// ============================================
+//  SYSTEM PROMPT
+// ============================================
 function buildSystemPrompt() {
   const estado = estaAbierto()
     ? "El local está ABIERTO en este momento."
     : "El local está CERRADO. Informá el próximo horario disponible si el cliente quiere hacer un pedido.";
-  const nombre = nombreUsuario ? `El cliente se llama ${nombreUsuario}. Usá su nombre cuando sea natural.` : "";
+  const nombre = nombreUsuario ? ("El cliente se llama " + nombreUsuario + ". Usá su nombre cuando sea natural.") : "";
 
-  return `Sos el asistente virtual de Masa & Fuego, una pizzería ubicada en Posadas, Misiones, Argentina.
-Tu rol es atender a los clientes de manera amable, clara y directa. Respondé siempre en español rioplatense (usá "vos", "podés", "tenés").
-${nombre}
+  let prompt = "Sos el asistente virtual de Masa & Fuego, una pizzería ubicada en Posadas, Misiones, Argentina.\n";
+  prompt += "Tu rol es atender a los clientes de manera amable, clara y directa. Respondé siempre en español rioplatense (usá \"vos\", \"podés\", \"tenés\").\n";
+  prompt += nombre + "\n\n";
+  prompt += "== MENU ==\n";
+  prompt += "PIZZAS (precio por unidad entera):\n";
+  prompt += "- Muzzarella: $8.500\n";
+  prompt += "- Napolitana: $9.000\n";
+  prompt += "- Fugazzeta: $9.500\n";
+  prompt += "- Jamón y morrones: $10.000\n";
+  prompt += "- Cuatro quesos: $11.000\n\n";
+  prompt += "EMPANADAS (precio por docena):\n";
+  prompt += "- Carne cortada a cuchillo: $7.500\n";
+  prompt += "- Jamón y queso: $7.000\n";
+  prompt += "- Humita: $6.500\n";
+  prompt += "- Verdura: $6.500\n\n";
+  prompt += "CHIPÁ: $2.500 cada 100gr\n";
+  prompt += "PANCHOS: $2.500 c/u (con ketchup, mostaza o mayonesa)\n";
+  prompt += "GASEOSAS (500ml): Coca-Cola, Sprite o Fanta: $2.000 c/u\n";
+  prompt += "CAFÉS: Café negro: $1.500 | Cortado: $1.800 | Cappuccino: $2.500 | Lágrima: $1.800 | Café con leche: $2.000\n\n";
+  prompt += "== HORARIOS ==\n";
+  prompt += "- Lunes a sábado: 8:30 a 13:30 y 18:00 a 23:00\n";
+  prompt += "- Domingo: 18:00 a 22:00\n\n";
+  prompt += "== ESTADO ACTUAL ==\n";
+  prompt += estado + "\n\n";
+  prompt += "== IMPORTANTE ==\n";
+  prompt += "- Trabajamos con takeaway y también hacemos delivery.\n";
+  prompt += "- Si el cliente pregunta algo que no sabés, decile que puede llamarnos al +54 376 4123456 o escribirnos por Instagram @masayfuego.pos\n\n";
+  prompt += "Sé simpático, breve y útil. No inventes información.\n";
+  prompt += "Cuando menciones cualquier categoría del menú (pizzas, empanadas, chipá, panchos, gaseosas o cafés), empezá esa parte con su emoji correspondiente: 🍕 Pizzas, 🥟 Empanadas, 🧀 Chipá, 🌭 Panchos, 🥤 Gaseosas, ☕ Cafés. Esto aplica tanto si te preguntan por el menú completo como por una categoría puntual.\n";
+  prompt += "NUNCA uses guiones, asteriscos ni viñetas en tus respuestas. Escribí siempre en prosa corrida, como si hablaras en persona.\n";
+  prompt += "Para el menú completo, usá exactamente este formato (con los emojis, sin guiones):\n";
+  prompt += "🍕 Pizzas: Muzzarella, Napolitana, Fugazzeta, Jamón y morrones, Cuatro quesos.\n";
+  prompt += "🥟 Empanadas (por docena): Carne cortada a cuchillo, Jamón y queso, Humita, Verdura.\n";
+  prompt += "🧀 Chipá: $2.500 cada 100gr.\n";
+  prompt += "🌭 Panchos: $2.500 c/u.\n";
+  prompt += "🥤 Gaseosas: Coca-Cola, Sprite o Fanta (500ml).\n";
+  prompt += "☕ Cafés: Negro, Cortado, Cappuccino, Lágrima, Café con leche.\n\n";
+  prompt += "Para otras respuestas, escribí de forma conversacional y natural.";
 
-== MENÚ ==
-PIZZAS (precio por unidad entera):
-- Muzzarella: $8.500
-- Napolitana: $9.000
-- Fugazzeta: $9.500
-- Jamón y morrones: $10.000
-- Cuatro quesos: $11.000
-
-EMPANADAS (precio por docena):
-- Carne cortada a cuchillo: $7.500
-- Jamón y queso: $7.000
-- Humita: $6.500
-- Verdura: $6.500
-
-CHIPÁ: $2.500 cada 100gr
-PANCHOS: $2.500 c/u (con ketchup, mostaza o mayonesa)
-GASEOSAS (500ml): Coca-Cola, Sprite o Fanta: $2.000 c/u
-CAFÉS: Café negro: $1.500 | Cortado: $1.800 | Cappuccino: $2.500 | Lágrima: $1.800 | Café con leche: $2.000
-
-== HORARIOS ==
-- Lunes a sábado: 8:30 a 13:30 y 18:00 a 23:00
-- Domingo: 18:00 a 22:00
-
-== ESTADO ACTUAL ==
-${estado}
-
-== IMPORTANTE ==
-- Trabajamos con takeaway y también hacemos delivery.
-- Si el cliente pregunta algo que no sabés, decile que puede llamarnos al +54 376 4123456 o escribirnos por Instagram @masayfuego.pos
-
-Sé simpático, breve y útil. No inventes información.
-Cuando menciones cualquier categoría del menú (pizzas, empanadas, chipá, panchos, gaseosas o cafés), empezá esa parte con su emoji correspondiente: 🍕 Pizzas, 🥟 Empanadas, 🧀 Chipá, 🌭 Panchos, 🥤 Gaseosas, ☕ Cafés. Esto aplica tanto si te preguntan por el menú completo como por una categoría puntual.
-Para el menú completo, usá exactamente este formato (con los emojis, sin guiones):
-🍕 Pizzas: Muzzarella, Napolitana, Fugazzeta, Jamón y morrones, Cuatro quesos.
-🥟 Empanadas (por docena): Carne cortada a cuchillo, Jamón y queso, Humita, Verdura.
-🧀 Chipá: $2.500 cada 100gr.
-🌭 Panchos: $2.500 c/u.
-🥤 Gaseosas: Coca-Cola, Sprite o Fanta (500ml).
-☕ Cafés: Negro, Cortado, Cappuccino, Lágrima, Café con leche.
-
-Para otras respuestas, escribí de forma conversacional y natural.`;
+  return prompt;
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  HELPERS UI
-// ═══════════════════════════════════════════
-function scrollAlFondo(forzar = false) {
+// ============================================
+function scrollAlFondo(forzar) {
   const el = document.getElementById("messages");
   const yaAbajo = el.scrollHeight - el.clientHeight - el.scrollTop < 60;
   if (forzar || yaAbajo) el.scrollTop = el.scrollHeight;
@@ -1108,7 +1111,7 @@ function hora() {
 function agregarMensaje(texto, quien) {
   const msgs = document.getElementById("messages");
   const div = document.createElement("div");
-  div.className = `mensaje ${quien}`;
+  div.className = "mensaje " + quien;
 
   if (quien === "escribiendo") {
     const dots = document.createElement("div");
@@ -1120,9 +1123,10 @@ function agregarMensaje(texto, quien) {
     div.textContent = texto;
   } else {
     const contenido = document.createElement("div");
-    texto.split("\n").forEach((linea, i, arr) => {
+    const lineas = texto.split("\n");
+    lineas.forEach(function(linea, i) {
       contenido.appendChild(document.createTextNode(linea));
-      if (i < arr.length - 1) contenido.appendChild(document.createElement("br"));
+      if (i < lineas.length - 1) contenido.appendChild(document.createElement("br"));
     });
     const h = document.createElement("div");
     h.className = "msg-hora";
@@ -1130,7 +1134,6 @@ function agregarMensaje(texto, quien) {
     div.appendChild(contenido);
     div.appendChild(h);
 
-    // Calificación para mensajes del bot
     if (quien === "bot") {
       const ratingWrap = document.createElement("div");
       ratingWrap.className = "msg-rating";
@@ -1158,8 +1161,8 @@ function agregarMensaje(texto, quien) {
         guardarAnalytics();
       }
 
-      btnPos.addEventListener("click", () => calificar(true));
-      btnNeg.addEventListener("click", () => calificar(false));
+      btnPos.addEventListener("click", function(){ calificar(true); });
+      btnNeg.addEventListener("click", function(){ calificar(false); });
       ratingWrap.appendChild(btnPos);
       ratingWrap.appendChild(btnNeg);
       ratingWrap.appendChild(gracias);
@@ -1172,7 +1175,6 @@ function agregarMensaje(texto, quien) {
   return div;
 }
 
-// Añadir foto de plato a un mensaje
 function agregarFotoPlato(item) {
   if (!item.foto) return;
   const msgs = document.getElementById("messages");
@@ -1184,7 +1186,7 @@ function agregarFotoPlato(item) {
   img.src = item.foto;
   img.alt = item.nombre;
   img.loading = "lazy";
-  img.onerror = () => wrap.remove();
+  img.onerror = function(){ wrap.remove(); };
   wrap.appendChild(img);
   msgs.appendChild(wrap);
   scrollAlFondo(true);
@@ -1196,29 +1198,29 @@ function setBtnCargando(estado) {
   btn.classList.toggle("cargando", estado);
 }
 
-// ═══════════════════════════════════════════
-//  DETECCIÓN DE ÍTEMS
-// ═══════════════════════════════════════════
+// ============================================
+//  DETECCION DE ITEMS
+// ============================================
 function detectarItems(texto) {
   const lower = texto.toLowerCase();
   const intencionPedido = /quiero|pedir|pedido|me das|me da|dame|llevar|encargar|sumá|agregá|añadí/.test(lower);
   if (!intencionPedido) return [];
-  return MENU.filter(item => lower.includes(item.nombre.toLowerCase()));
+  return MENU.filter(function(item){ return lower.includes(item.nombre.toLowerCase()); });
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  PEDIDO
-// ═══════════════════════════════════════════
+// ============================================
 function actualizarPedido(items) {
-  items.forEach(item => {
-    const existe = pedidoItems.find(i => i.nombre === item.nombre);
-    if (!existe) pedidoItems.push({ ...item, cantidad: 1 });
+  items.forEach(function(item) {
+    const existe = pedidoItems.find(function(i){ return i.nombre === item.nombre; });
+    if (!existe) pedidoItems.push(Object.assign({}, item, { cantidad: 1 }));
     else existe.cantidad++;
   });
   renderPedido(true);
 }
 
-function renderPedido(animarUltimo = false) {
+function renderPedido(animarUltimo) {
   const preview  = document.getElementById("pedido-preview");
   const cont     = document.getElementById("pedido-items");
   const total    = document.getElementById("pedido-total");
@@ -1230,19 +1232,22 @@ function renderPedido(animarUltimo = false) {
   preview.classList.remove("oculto");
   cont.innerHTML = "";
   let suma = 0;
+  let cantidadTotal = 0;
 
-  pedidoItems.forEach((item, idx) => {
+  pedidoItems.forEach(function(item, idx) {
     suma += item.precio * item.cantidad;
+    cantidadTotal += item.cantidad;
     const row = document.createElement("div");
     row.className = "pedido-item";
     if (animarUltimo && idx === pedidoItems.length - 1) row.classList.add("item-nuevo");
-    row.innerHTML = <span>${item.emoji} ${item.nombre}${item.cantidad > 1 ? x${item.cantidad} : ""}</span><span>$${(item.precio * item.cantidad).toLocaleString("es-AR")}</span>`;
+    const cantTxt = item.cantidad > 1 ? (" x" + item.cantidad) : "";
+    row.innerHTML = "<span>" + item.emoji + " " + item.nombre + cantTxt + "</span><span>$" + (item.precio * item.cantidad).toLocaleString("es-AR") + "</span>";
     cont.appendChild(row);
   });
 
   total.style.display = "flex";
-  totalVal.textContent = $${suma.toLocaleString("es-AR")};
-  cant.textContent = (${pedidoItems.reduce((a, i) => a + i.cantidad, 0)});
+  totalVal.textContent = "$" + suma.toLocaleString("es-AR");
+  cant.textContent = "(" + cantidadTotal + ")";
 }
 
 function limpiarPedido() {
@@ -1252,7 +1257,7 @@ function limpiarPedido() {
   agregarMensaje("✅ Pedido guardado en tu historial.", "bot");
 }
 
-document.getElementById("pedido-header").addEventListener("click", () => {
+document.getElementById("pedido-header").addEventListener("click", function() {
   pedidoAbierto = !pedidoAbierto;
   document.getElementById("pedido-items").classList.toggle("oculto", !pedidoAbierto);
   document.getElementById("pedido-total").style.display = pedidoAbierto ? "flex" : "none";
@@ -1262,18 +1267,18 @@ document.getElementById("pedido-header").addEventListener("click", () => {
 
 document.getElementById("btn-limpiar-pedido").addEventListener("click", limpiarPedido);
 
-document.getElementById("btn-historial-pedido").addEventListener("click", () => {
+document.getElementById("btn-historial-pedido").addEventListener("click", function() {
   renderHistorial();
   document.getElementById("modal-historial").classList.add("visible");
 });
 
-document.getElementById("btn-cerrar-modal").addEventListener("click", () => {
+document.getElementById("btn-cerrar-modal").addEventListener("click", function() {
   document.getElementById("modal-historial").classList.remove("visible");
 });
 
-// ═══════════════════════════════════════════
+// ============================================
 //  SUGERENCIAS
-// ═══════════════════════════════════════════
+// ============================================
 function detectarContexto(texto) {
   const t = texto.toLowerCase();
   if (t.includes("menú") || t.includes("menu") || t.includes("carta")) return "menu";
@@ -1289,11 +1294,11 @@ function mostrarSugerencias(contexto) {
   if (!lista) return;
   const wrap = document.createElement("div");
   wrap.className = "sugerencias-wrap";
-  lista.forEach(texto => {
+  lista.forEach(function(texto) {
     const btn = document.createElement("button");
     btn.className = "btn-sugerencia";
     btn.textContent = texto;
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", function() {
       wrap.remove();
       document.getElementById("input").value = texto;
       enviarMensaje();
@@ -1304,17 +1309,17 @@ function mostrarSugerencias(contexto) {
   scrollAlFondo(true);
 }
 
-// ═══════════════════════════════════════════
-//  BOTONES RÁPIDOS
-// ═══════════════════════════════════════════
+// ============================================
+//  BOTONES RAPIDOS
+// ============================================
 function mostrarBotonesRapidos() {
   const wrap = document.createElement("div");
   wrap.className = "botones-rapidos-wrap";
-  ["📋 Ver menú", "🕐 Horarios", "📞 Contacto"].forEach(texto => {
+  ["📋 Ver menú", "🕐 Horarios", "📞 Contacto"].forEach(function(texto) {
     const btn = document.createElement("button");
     btn.className = "btn-rapido";
     btn.textContent = texto;
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", function() {
       wrap.remove();
       document.getElementById("input").value = texto.replace(/📋|🕐|📞/g, "").trim();
       enviarMensaje();
@@ -1325,24 +1330,27 @@ function mostrarBotonesRapidos() {
   scrollAlFondo(true);
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  API
-// ═══════════════════════════════════════════
-async function llamarAPI() {
-  const payload = [{ role: "system", content: buildSystemPrompt() }, ...mensajes];
-  const res = await fetch("/chat", {
+// ============================================
+function llamarAPI() {
+  const payload = [{ role: "system", content: buildSystemPrompt() }].concat(mensajes);
+  return fetch("/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ messages: payload })
+  }).then(function(res) {
+    if (!res.ok) throw new Error("api_error");
+    return res.json();
+  }).then(function(data) {
+    return data.choices[0].message.content;
   });
-  if (!res.ok) throw new Error("api_error");
-  const data = await res.json();
-  return data.choices[0].message.content;
 }
-// ═══════════════════════════════════════════
+
+// ============================================
 //  ENVIAR MENSAJE
-// ═══════════════════════════════════════════
-async function enviarMensaje() {
+// ============================================
+function enviarMensaje() {
   const input = document.getElementById("input");
   const texto = input.value.trim();
   if (!texto || enviando) return;
@@ -1361,24 +1369,20 @@ async function enviarMensaje() {
 
   const typing = agregarMensaje("", "escribiendo");
 
-  try {
-    const respuesta = await llamarAPI();
+  llamarAPI().then(function(respuesta) {
     typing.remove();
     reproducirSonido();
     agregarMensaje(respuesta, "bot");
     mensajes.push({ role: "assistant", content: respuesta });
     guardarHistorial();
 
-    // Fotos de platos
     const items = detectarItems(texto);
     if (items.length > 0) {
       actualizarPedido(items);
-      // Mostrar foto solo del primer ítem reconocido con foto
-      const conFoto = items.find(i => i.foto);
+      const conFoto = items.find(function(i){ return i.foto; });
       if (conFoto) agregarFotoPlato(conFoto);
     }
 
-    // Contexto y analytics
     const contexto = detectarContexto(texto) || detectarContexto(respuesta);
     if (contexto) {
       mostrarSugerencias(contexto);
@@ -1388,29 +1392,29 @@ async function enviarMensaje() {
     if (document.getElementById("chat-container").classList.contains("minimizado")) {
       const badge = document.getElementById("badge");
       badge.style.display = "flex";
-      badge.textContent = parseInt(badge.textContent || 0) + 1;
+      badge.textContent = String(parseInt(badge.textContent || "0", 10) + 1);
     }
-  } catch (e) {
+  }).catch(function(e) {
     typing.remove();
     const msg = e.message === "rate_limit"
       ? "Demasiadas consultas seguidas. Esperá un momento y volvé a intentarlo."
       : "No se pudo conectar con el servidor. Revisá tu conexión.";
     agregarMensaje(msg, "toast");
     console.error(e);
-  } finally {
+  }).finally(function() {
     enviando = false;
     setBtnCargando(false);
     input.focus();
-  }
+  });
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  HISTORIAL CHAT
-// ═══════════════════════════════════════════
+// ============================================
 function guardarHistorial() {
   try {
     localStorage.setItem("mf_historial", JSON.stringify(mensajes.slice(-MAX_HISTORIAL)));
-  } catch (_) {}
+  } catch (e) {}
 }
 
 function cargarHistorial() {
@@ -1421,11 +1425,11 @@ function cargarHistorial() {
     if (!Array.isArray(hist) || hist.length === 0) return false;
     mensajes = hist;
     return true;
-  } catch (_) { return false; }
+  } catch (e) { return false; }
 }
 
 function restaurarMensajesUI() {
-  mensajes.forEach(m => {
+  mensajes.forEach(function(m) {
     if (m.role === "user" || m.role === "assistant")
       agregarMensaje(m.content, m.role === "user" ? "usuario" : "bot");
   });
@@ -1441,9 +1445,9 @@ function resetearChat() {
   iniciarChat();
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  SOUND
-// ═══════════════════════════════════════════
+// ============================================
 function reproducirSonido() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1457,34 +1461,34 @@ function reproducirSonido() {
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.3);
-  } catch(_) {}
+  } catch(e) {}
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  MODO OSCURO
-// ═══════════════════════════════════════════
+// ============================================
 function aplicarTema(oscuro) {
   document.body.classList.toggle("dark", oscuro);
   document.getElementById("btn-tema").textContent = oscuro ? "☀️" : "🌙";
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  CHAR COUNT
-// ═══════════════════════════════════════════
+// ============================================
 function actualizarCharCount() {
   const input = document.getElementById("input");
   const count = document.getElementById("char-count");
   const len = input.value.length;
   const cerca = len >= MAX_CHARS * 0.8;
-  count.textContent = cerca ? ${len}/${MAX_CHARS} : "";
+  count.textContent = cerca ? (len + "/" + MAX_CHARS) : "";
   count.classList.toggle("limite", len >= MAX_CHARS);
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  NOMBRE DE USUARIO
-// ═══════════════════════════════════════════
+// ============================================
 function pedirNombre() {
-  return new Promise(resolve => {
+  return new Promise(function(resolve) {
     const modal = document.getElementById("modal-nombre");
     const inputEl = document.getElementById("nombre-input");
     modal.classList.add("visible");
@@ -1499,20 +1503,20 @@ function pedirNombre() {
     }
 
     document.getElementById("btn-guardar-nombre").addEventListener("click", guardar);
-    document.getElementById("btn-saltar-nombre").addEventListener("click", () => {
+    document.getElementById("btn-saltar-nombre").addEventListener("click", function() {
       modal.classList.remove("visible");
       resolve("");
     });
-    inputEl.addEventListener("keydown", e => {
+    inputEl.addEventListener("keydown", function(e) {
       if (e.key === "Enter") guardar();
     });
   });
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  INIT
-// ═══════════════════════════════════════════
-async function iniciarChat() {
+// ============================================
+function iniciarChat() {
   actualizarEstado();
   const hayHistorial = cargarHistorial();
 
@@ -1525,101 +1529,107 @@ async function iniciarChat() {
     scrollAlFondo(true);
   } else {
     const abierto = estaAbierto();
-    const saludo = nombreUsuario
-      ? (abierto
-          ? `¡Hola ${nombreUsuario}! 🔥 Bienvenido de nuevo a Masa & Fuego. ¿En qué te puedo ayudar?`
-          : `¡Hola de nuevo, ${nombreUsuario}! 🌙 Estamos cerrados ahora, pero podés consultarnos lo que quieras.`)
-      : (abierto
-          ? "¡Bienvenido a Masa & Fuego! 🔥 ¿En qué te puedo ayudar?"
-          : "¡Hola! Ahora estamos cerrados 🌙, pero podés consultarnos lo que quieras para cuando abramos.");
+    let saludo;
+    if (nombreUsuario) {
+      saludo = abierto
+        ? ("¡Hola " + nombreUsuario + "! 🔥 Bienvenido de nuevo a Masa & Fuego. ¿En qué te puedo ayudar?")
+        : ("¡Hola de nuevo, " + nombreUsuario + "! 🌙 Estamos cerrados ahora, pero podés consultarnos lo que quieras.");
+    } else {
+      saludo = abierto
+        ? "¡Bienvenido a Masa & Fuego! 🔥 ¿En qué te puedo ayudar?"
+        : "¡Hola! Ahora estamos cerrados 🌙, pero podés consultarnos lo que quieras para cuando abramos.";
+    }
     agregarMensaje(saludo, "bot");
     mostrarBotonesRapidos();
   }
 }
 
-// ═══════════════════════════════════════════
+// ============================================
 //  ANALYTICS PANEL
-// ═══════════════════════════════════════════
-document.getElementById("btn-cerrar-analytics").addEventListener("click", () => {
+// ============================================
+document.getElementById("btn-cerrar-analytics").addEventListener("click", function() {
   document.getElementById("panel-analytics").classList.remove("visible");
   document.getElementById("analytics-overlay").classList.remove("visible");
 });
-document.getElementById("analytics-overlay").addEventListener("click", () => {
+document.getElementById("analytics-overlay").addEventListener("click", function() {
   document.getElementById("panel-analytics").classList.remove("visible");
   document.getElementById("analytics-overlay").classList.remove("visible");
 });
 
-// ═══════════════════════════════════════════
+// ============================================
 //  LOAD
-// ═══════════════════════════════════════════
-window.addEventListener("load", async () => {
+// ============================================
+window.addEventListener("load", function() {
   const temaGuardado = localStorage.getItem("mf_tema") === "oscuro";
   aplicarTema(temaGuardado);
   cargarAnalytics();
   analytics.sesiones++;
   guardarAnalytics();
 
-  // Nombre
   const nombreGuardado = localStorage.getItem("mf_nombre");
+  const continuar = function() {
+    iniciarChat();
+
+    document.getElementById("btn-tema").addEventListener("click", function() {
+      const esOscuro = document.body.classList.contains("dark");
+      localStorage.setItem("mf_tema", esOscuro ? "claro" : "oscuro");
+      aplicarTema(!esOscuro);
+    });
+
+    document.getElementById("btn-reset").addEventListener("click", resetearChat);
+
+    document.getElementById("btn-minimizar").addEventListener("click", function() {
+      const c = document.getElementById("chat-container");
+      c.classList.add("minimizado");
+      setTimeout(function() {
+        c.style.display = "none";
+        document.getElementById("btn-abrir").classList.add("visible");
+      }, 250);
+    });
+
+    document.getElementById("btn-cerrar").addEventListener("click", function() {
+      document.getElementById("chat-wrapper").style.display = "none";
+    });
+
+    document.getElementById("btn-abrir").addEventListener("click", function() {
+      const c = document.getElementById("chat-container");
+      c.style.display = "flex";
+      void c.offsetWidth;
+      c.classList.remove("minimizado");
+      document.getElementById("btn-abrir").classList.remove("visible");
+      const badge = document.getElementById("badge");
+      badge.style.display = "none";
+      badge.textContent = "0";
+      scrollAlFondo(true);
+    });
+
+    document.getElementById("btn-enviar").addEventListener("click", enviarMensaje);
+
+    document.getElementById("input").addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviarMensaje(); }
+    });
+
+    document.getElementById("input").addEventListener("input", actualizarCharCount);
+
+    document.addEventListener("keydown", function(e) {
+      if (e.ctrlKey && e.shiftKey && e.key === "A") {
+        e.preventDefault();
+        renderAnalytics();
+        document.getElementById("panel-analytics").classList.toggle("visible");
+        document.getElementById("analytics-overlay").classList.toggle("visible");
+      }
+    });
+  };
+
   if (nombreGuardado) {
     nombreUsuario = nombreGuardado;
+    continuar();
   } else {
-    nombreUsuario = await pedirNombre();
+    pedirNombre().then(function(val) {
+      nombreUsuario = val;
+      continuar();
+    });
   }
-
-  await iniciarChat();
-
-  // Eventos
-  document.getElementById("btn-tema").addEventListener("click", () => {
-    const esOscuro = document.body.classList.contains("dark");
-    localStorage.setItem("mf_tema", esOscuro ? "claro" : "oscuro");
-    aplicarTema(!esOscuro);
-  });
-
-  document.getElementById("btn-reset").addEventListener("click", resetearChat);
-
-  document.getElementById("btn-minimizar").addEventListener("click", () => {
-    const c = document.getElementById("chat-container");
-    c.classList.add("minimizado");
-    setTimeout(() => {
-      c.style.display = "none";
-      document.getElementById("btn-abrir").classList.add("visible");
-    }, 250);
-  });
-
-  document.getElementById("btn-cerrar").addEventListener("click", () => {
-    document.getElementById("chat-wrapper").style.display = "none";
-  });
-
-  document.getElementById("btn-abrir").addEventListener("click", () => {
-    const c = document.getElementById("chat-container");
-    c.style.display = "flex";
-    void c.offsetWidth;
-    c.classList.remove("minimizado");
-    document.getElementById("btn-abrir").classList.remove("visible");
-    const badge = document.getElementById("badge");
-    badge.style.display = "none";
-    badge.textContent = "0";
-    scrollAlFondo(true);
-  });
-
-  document.getElementById("btn-enviar").addEventListener("click", enviarMensaje);
-
-  document.getElementById("input").addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviarMensaje(); }
-  });
-
-  document.getElementById("input").addEventListener("input", actualizarCharCount);
-
-  // Shortcut secreto: Ctrl+Shift+A
-  document.addEventListener("keydown", e => {
-    if (e.ctrlKey && e.shiftKey && e.key === "A") {
-      e.preventDefault();
-      renderAnalytics();
-      document.getElementById("panel-analytics").classList.toggle("visible");
-      document.getElementById("analytics-overlay").classList.toggle("visible");
-    }
-  });
 });
 </script>
 </body>
