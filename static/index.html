@@ -153,9 +153,14 @@
       gap: 8px;
       scroll-behavior: smooth;
     }
-
-    #messages::-webkit-scrollbar { width: 3px; }
-    #messages::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+    #messages::-webkit-scrollbar { width: 12px; }
+#messages::-webkit-scrollbar-track { background: transparent; }
+#messages::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+  opacity: 0.6;
+}
+#messages::-webkit-scrollbar-thumb:hover { background: var(--accent-dark); }
 
     .mensaje {
       padding: 10px 14px;
@@ -1074,9 +1079,11 @@ ${estado}
 - Trabajamos con takeaway y también hacemos delivery.
 - Si el cliente pregunta algo que no sabés, decile que puede llamarnos al +54 376 4123456 o escribirnos por Instagram @masayfuego.pos
 
-Sé simpático, breve y útil. No inventes información. Para el menú completo, usá este formato:
+Sé simpático, breve y útil. No inventes información.
+NUNCA uses guiones, asteriscos ni viñetas en tus respuestas, bajo ninguna circunstancia. Escribí siempre en prosa corrida, como si hablaras en persona.
+Para el menú completo, usá exactamente este formato (con los emojis, sin guiones).
 🍕 Pizzas: Muzzarella, Napolitana, Fugazzeta, Jamón y morrones, Cuatro quesos.
-🥟 Empanadas (por docena): Carne cortada a cuchillo, Jamón y queso, Humita, Verdura.
+🥟 Empanadas (por docena): Carne cortada a cuchillo, Jamón y queso, Humita, Verdura, Cebolla y Queso, Pollo con queso, .
 🧀 Chipá: $2.500 cada 100gr.
 🌭 Panchos: $2.500 c/u.
 🥤 Gaseosas: Coca-Cola, Sprite o Fanta (500ml).
